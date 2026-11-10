@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>טבעות מחזורי חיים</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: one ring per screen; stage slots wide and square-cornered, process slots narrow with an arrow; tray split into stages and processes. n = amber, 2n = teal, meiosis = violet, fusion = rose. */
+:root{
+  --bg:#eef2ef; --panel:#ffffff; --sunk:#e3e9e5; --fg:#15241f; --mut:#56685f; --line:#c3d0c9; --slot:#9aa9a1; --proc:#f3f5f4;
+  --n:#a8660a; --n-soft:#f7e7cd; --d:#0c7a6c; --d-soft:#cdece6; --mei:#6a43c2; --mei-soft:#e8e0fa; --fert:#b2306a; --fert-soft:#f8dde9;
+  --ok:#1b7a37; --ok-soft:#d6f0dc; --bad:#c0261c; --bad-soft:#f9dcd9; --sel:#1f5fd0; --gold:#b8860b;
+  --display:"Secular One","Assistant",system-ui,sans-serif; --body:"Assistant",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1715; --panel:#17221f; --sunk:#111b18; --fg:#e2ede9; --mut:#94a89f; --line:#2b3b36; --slot:#4f625b; --proc:#141e1b;
+  --n:#f0a63c; --n-soft:#3a2b12; --d:#40cfbb; --d-soft:#113932; --mei:#ab8cf2; --mei-soft:#2c2246; --fert:#f07aae; --fert-soft:#43192c;
+  --ok:#62d482; --ok-soft:#143a20; --bad:#ff8077; --bad-soft:#47191a; --sel:#7fb0ff; --gold:#e8b84a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1715; --panel:#17221f; --sunk:#111b18; --fg:#e2ede9; --mut:#94a89f; --line:#2b3b36; --slot:#4f625b; --proc:#141e1b;
+  --n:#f0a63c; --n-soft:#3a2b12; --d:#40cfbb; --d-soft:#113932; --mei:#ab8cf2; --mei-soft:#2c2246; --fert:#f07aae; --fert-soft:#43192c;
+  --ok:#62d482; --ok-soft:#143a20; --bad:#ff8077; --bad-soft:#47191a; --sel:#7fb0ff; --gold:#e8b84a; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;direction:rtl}
+.wrap{max-width:560px;margin:0 auto;padding-block:16px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--display);font-weight:400;font-size:30px;line-height:1.15;margin:0 0 6px;text-wrap:balance}
+.kick{font-size:13px;color:var(--mut)}
+p{margin:0 0 10px}
+button{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+button:disabled{opacity:.45;cursor:default}
+.defs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}
+.def{background:var(--panel);border:1px solid var(--line);padding:8px 10px;font-size:14px;line-height:1.35;min-width:0}
+.def b{display:block;font-size:15px;margin-bottom:2px}
+.def.S{border-radius:4px;border-width:2px;border-color:var(--fg)}
+.def.A{border-radius:18px;background:var(--proc);border-style:dashed}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 10px}
+.tabs button{padding:8px 4px;font-size:14px;line-height:1.2}
+.tabs button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.tabs .st{display:block;font-size:12px;opacity:.8}
+.life{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 8px}
+.life button{display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 4px;font-size:13px;line-height:1.2;border-color:var(--gold)}
+.life button .ic{font-size:18px;line-height:1.1;color:var(--gold)}
+.life button .nm{font-weight:700}
+.life button .ds{font-size:11.5px;color:var(--mut)}
+.life button.used{border-style:dashed;border-color:var(--line)}
+.hearts{display:flex;align-items:center;justify-content:center;gap:4px;margin:0 0 6px;font-size:24px;line-height:1}
+.hearts .hl{font-size:13px;color:var(--mut);margin-inline-end:6px}
+.hearts .h.off{filter:grayscale(1);opacity:.35}
+.hearts.hit{animation:shake .45s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+@media (prefers-reduced-motion: reduce){.hearts.hit{animation:none}}
+.ringbox{position:relative;width:100%;max-width:440px;margin:0 auto}
+svg.ring{display:block;width:100%;height:auto}
+.seg{cursor:pointer}
+.seg.filled{touch-action:none}
+.seg path.bg{stroke:var(--slot);stroke-width:.6;stroke-dasharray:2.5 1.6}
+.seg.S path.bg{fill:transparent}
+.seg.A path.bg{fill:var(--proc)}
+.seg.filled path.bg{stroke:var(--fg);stroke-dasharray:none}
+.seg.S.filled path.bg{fill:var(--panel);stroke-width:1.1}
+.seg.A.filled path.bg{fill:var(--proc)}
+.seg.filled.pn path.bg{fill:var(--n-soft)}.seg.filled.p2n path.bg{fill:var(--d-soft)}
+.seg.target path.bg{stroke:var(--sel);stroke-width:1.6;stroke-dasharray:none}
+.seg.ok path.bg{stroke:var(--ok);stroke-width:1.8;stroke-dasharray:none}
+.seg.bad path.bg{stroke:var(--bad);stroke-width:1.8;stroke-dasharray:none}
+.seg.picked path.bg{stroke:var(--sel);stroke-width:2;stroke-dasharray:3 1.5}
+.seg.picked .lift{opacity:.5}
+.seg.fixed{cursor:default}
+.seg.fixed path.bg{stroke-width:1.8!important}
+.lbl{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1;font-family:var(--body);color:var(--fg);direction:rtl;word-break:break-word}
+.hint{fill:var(--mut);font-size:5.5px;font-family:var(--body)}
+.center{font-family:var(--display);font-size:9px;fill:var(--fg)}
+.center2{font-size:5.5px;fill:var(--mut);font-family:var(--body)}
+.pbadge{font-size:6px;font-weight:700;font-family:var(--body);direction:ltr}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0 0}
+.panel .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.panel.tip{border-color:var(--gold);border-width:2px}
+.pl button{min-width:60px;font-weight:700;direction:ltr}
+.pl button.on[data-p="n"]{background:var(--n-soft);border-color:var(--n);color:var(--n)}
+.pl button.on[data-p="2n"]{background:var(--d-soft);border-color:var(--d);color:var(--d)}
+.trayhead{display:flex;align-items:center;gap:6px;margin:14px 0 6px}
+.trayhead .lbl2{font-size:13px;color:var(--mut);margin-inline-end:auto}
+.btn-main{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:700}
+.tray{border:2px dashed transparent;border-radius:12px;padding:4px;transition:border-color .1s}
+.tray.target{border-color:var(--sel)}
+.grp{margin:0 0 8px}
+.grp .gl{font-size:12.5px;color:var(--mut);margin:0 0 4px}
+.pool{display:flex;flex-wrap:wrap;gap:6px;min-height:20px}
+.tile{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);padding:7px 11px;font-size:15px;line-height:1.25;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
+.tile.S{border-radius:4px;border:2px solid var(--fg);font-weight:700}
+.tile.S::before{content:"";width:9px;height:9px;border:2px solid currentColor;border-radius:2px;flex:none;opacity:.6}
+.tile.A{border-radius:999px;border-style:dashed;background:var(--proc)}
+.tile.A::before{content:"←";font-weight:700;opacity:.7}
+.tile.mei{background:var(--mei-soft);border-color:var(--mei);color:var(--mei)}
+.tile.fert{background:var(--fert-soft);border-color:var(--fert);color:var(--fert)}
+.tile.sel{outline:3px solid var(--sel);outline-offset:1px}
+.tile.dim{opacity:.35}
+.tile,.ring{-webkit-touch-callout:none}
+.info{position:fixed;z-index:60;max-width:min(300px,calc(100vw - 32px));background:var(--panel);color:var(--fg);border:2px solid var(--gold);border-radius:14px;padding:10px 12px;box-shadow:0 8px 24px rgba(0,0,0,.22);font-size:14px;line-height:1.4;text-align:right}
+.info .ih{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.info .q{flex:none;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#1a1405;font-weight:700;display:grid;place-items:center;font-size:15px}
+.info b{font-size:15px}.info .k{font-size:12px;color:var(--mut);margin-inline-start:auto;white-space:nowrap}
+.info::after{content:"";position:absolute;left:var(--ax,50%);width:12px;height:12px;background:var(--panel);border:2px solid var(--gold);transform:translateX(-50%) rotate(45deg)}
+.info.below::after{top:-8px;border-right:0;border-bottom:0}.info:not(.below)::after{bottom:-8px;border-left:0;border-top:0}
+.ghost{position:fixed;z-index:50;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.25);opacity:.95}
+.msg{font-size:14px;min-height:21px;margin:8px 0 0;color:var(--mut)}
+.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok);font-weight:700}
+.done{border-color:var(--ok);border-width:2px}
+.stars{color:var(--gold);letter-spacing:1px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--mut);margin:6px 0 0}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:4px;vertical-align:-1px}
+.foot{font-size:12px;color:var(--mut);margin-top:22px;border-top:1px solid var(--line);padding-top:8px}
+.shake{animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}.tray{transition:none}}
+
+.seg.glow path.bg{stroke:var(--gold)!important;stroke-width:2.6!important;stroke-dasharray:none!important}
+.caption{min-height:52px;text-align:center;font-family:var(--display);font-size:20px;line-height:1.25;margin:8px 0 0}
+.caption .ar{color:var(--mut);font-family:var(--body);font-size:15px;display:block}
+canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+.topbtns{display:flex;gap:6px;justify-content:flex-start;margin:0 0 8px}
+.topbtns button{font-size:14px;padding:6px 12px}
+.overlay{position:fixed;inset:0;z-index:70;background:color-mix(in srgb,var(--bg) 92%,transparent);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));overflow-y:auto}
+.overlay .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:720px;width:100%;text-align:center}
+.qrbig{width:min(70vmin,420px);height:auto;background:#fff;padding:10px;border-radius:8px}
+.overlay h2{font-family:var(--display);font-weight:400;font-size:clamp(24px,5vw,40px);margin:0 0 8px}
+.url{font-size:14px;color:var(--mut);direction:ltr;word-break:break-all;margin:8px 0}
+.cert img{width:100%;height:auto;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.18)}
+.cert input{font:inherit;font-size:17px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;width:100%;max-width:320px;background:var(--panel);color:var(--fg)}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#1a1405;font-weight:700}
+</style>
+
+<canvas id="fx" hidden></canvas>
+<div class="overlay" id="ov" hidden></div>
+<div class="wrap">
+  <div class="kick">71049 מבוא למדעי הצמח · מחזורי חיים</div>
+  <h1>טבעות מחזורי חיים</h1>
+  <div class="defs">
+    <div class="def S"><b>שלב = מה קיים</b>תא, גמטה, נבג או אורגניזם שלם. לכל שלב יש פלואידיה, n או 2n. משבצת רחבה בלי חץ.</div>
+    <div class="def A"><b>תהליך = מה קורה</b>מה שהופך שלב אחד לשלב הבא: מיוזה, מיטוזה, הפריה, נביטה. לתהליך אין פלואידיה. משבצת צרה עם חץ.</div>
+  </div>
+  <p class="kick">שלב 1 קבוע בראש הטבעת. ממנו מסדרים עם כיוון השעון: תהליך, שלב, תהליך, שלב, עד שחוזרים אליו. גוררים חלק, או מקישים עליו ואז על משבצת. אפשר להזיז חלק שכבר הונח, ושני חלקים מתחלפים ביניהם. הקשה על שלב בטבעת פותחת את בחירת ה-n או 2n. <b>לחיצה ארוכה על חלק</b> פותחת בועית <b>?</b> עם הסבר עליו. <b>לכל פאזל 3 לבבות:</b> בדיקה עם חלק במקום הלא נכון מורידה לב שלם. כשהסידור נכון וטועים רק ב-n/2n, יורד חצי לב. אחרי 3 לבבות הפאזל מתחיל מחדש.</p>
+  <div class="topbtns"><button type="button" id="bQR">QR להצגה בכיתה</button><button type="button" id="bCert" hidden>התעודה שלי</button><button type="button" id="bSnd" aria-pressed="true">צליל: פועל</button></div>
+  <nav class="tabs" id="tabs"></nav>
+  <div class="life" id="life"></div>
+  <div class="hearts" id="hearts" aria-live="polite"></div>
+  <div class="ringbox"><svg class="ring" id="ring" viewBox="-102 -102 204 204" role="img" aria-label="טבעת מחזור החיים"></svg></div>
+  <div class="caption" id="caption" aria-live="polite"></div>
+  <div class="panel" id="panel" hidden></div>
+  <div class="panel tip" id="tipbox" hidden></div>
+  <div class="trayhead"><span class="lbl2" id="cnt"></span><button type="button" id="bReset">ערבוב מחדש</button><button type="button" id="bCheck" class="btn-main">בדיקה</button></div>
+  <div class="tray" id="tray">
+    <div class="grp"><div class="gl">שלבים (מה קיים)</div><div class="pool" id="poolS"></div></div>
+    <div class="grp"><div class="gl">תהליכים (מה קורה)</div><div class="pool" id="poolA"></div></div>
+  </div>
+  <div class="msg" id="msg" aria-live="polite"></div>
+  <div class="legend"><span><span class="sw" style="background:var(--n)"></span>n</span><span><span class="sw" style="background:var(--d)"></span>2n</span><span><span class="sw" style="background:var(--mei)"></span>מיוזה</span><span><span class="sw" style="background:var(--fert)"></span>הפריה</span></div>
+  <p class="foot">התוכן: סיכום שבוע 2 בכספת (מצגת משימת מחזורי החיים במודל) והחוברת הצהובה עמ' 112. שלב 1 קבוע בראש הטבעת, ומשם מסדרים עם כיוון השעון.</p>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const CYC={
+ hap:{name:'הפלונטי',en:'haplontic',ex:'דוגמאות מהקורס: Chlamydomonas, Spirogyra',
+  chain:[['S','פרט בוגר','n'],['A','מיטוזה (יצירת גמטות)'],['S','גמטות','n'],['A','הפריה'],['S','זיגוטה','2n'],['A','מיוזה בזיגוטה'],['S','4 תאים / נבגים','n'],['A','מיטוזות (גדילה)']],
+  tip:'רק השלב ההפלואידי גדל. הזיגוטה היא התא הדיפלואידי היחיד, והיא עוברת מיוזה מיד. לכן הגמטות נוצרות במיטוזה: הפרט כבר n.',
+  why:'רק השלב ההפלואידי גדל. הזיגוטה היא התא הדיפלואידי היחיד, והיא עוברת מיוזה מיד.'},
+ hd:{name:'הפלו-דיפלונטי',en:'haplo-diplontic',ex:'דוגמאות מהקורס: Ulva, Laminaria',
+  chain:[['S','ספורופיט','2n'],['A','מיוזה במיוספורנגיום'],['S','מיוספורות','n'],['A','נביטה ומיטוזות'],['S','גמטופיט','n'],['A','מיטוזה בגמטנגיום'],['S','גמטות','n'],['A','הפריה'],['S','זיגוטה','2n'],['A','מיטוזות (גדילה)']],
+  tip:'יש כאן שני פרטים רב-תאיים. הספורופיט (2n) יוצר נבגים במיוזה, והנבג נובט לבדו לגמטופיט, בלי להתלכד. הגמטופיט (n) יוצר גמטות במיטוזה.',
+  why:'חילוף דורות: הגמטופיט (n) יוצר גמטות במיטוזה, והספורופיט (2n) יוצר מיוספורות במיוזה. הזיגוטה מתחלקת במיטוזות, לא במיוזה.'},
+ dip:{name:'דיפלונטי',en:'diplontic',ex:'דוגמאות מהקורס: צורניות, Fucus',
+  chain:[['S','פרט בוגר','2n'],['A','מיוזה ביצירת גמטות'],['S','גמטות','n'],['A','הפריה'],['S','זיגוטה','2n'],['A','מיטוזות (גדילה)']],
+  tip:'רק השלב הדיפלואידי גדל ("מאפיין בעלי חיים"). תוצרי המיוזה הם הגמטות עצמן, והן השלב ההפלואידי היחיד.',
+  why:'רק השלב הדיפלואידי גדל. המיוזה יוצרת גמטות ישירות, והן השלב ההפלואידי היחיד.'}
+};
+const ORDER=['dip','hap','hd'],LEVEL={dip:'קל',hap:'בינוני',hd:'קשה'};
+const LIFE=[
+ {k:'tip',ic:'?',nm:'רמז מהמרצה',ds:'משפט מכוון על המחזור'},
+ {k:'scan',ic:'✓',nm:'בדיקה שקטה',ds:'מה כבר נכון, בלי לגלות איפה'},
+ {k:'place',ic:'⌖',nm:'חלק במקום',ds:'מניח חלק אחד נכון'}
+];
+const kind=l=>/מיוזה/.test(l)?'mei':/(הפריה)/.test(l)?'fert':'';
+const R=96,r=44,NS='http://www.w3.org/2000/svg',WS=1.45,WA=1; // stage slots wider than process slots
+const P=(a,rad)=>[rad*Math.sin(a),-rad*Math.cos(a)];
+function sector(a0,a1){const [x0,y0]=P(a0,R),[x1,y1]=P(a1,R),[x2,y2]=P(a1,r),[x3,y3]=P(a0,r);return `M${x0} ${y0} A${R} ${R} 0 0 1 ${x1} ${y1} L${x2} ${y2} A${r} ${r} 0 0 0 ${x3} ${y3} Z`}
+let best=store.get('ring-stars',{}), S=null;
+
+function start(id){
+  const c=CYC[id]; if(!c) return start('dip');
+  const tiles=c.chain.map((s,i)=>({id:i,k:s[0],lbl:s[1]}));
+  const tot=c.chain.reduce((a,s)=>a+(s[0]==='S'?WS:WA),0); let acc=0;
+  acc=-(WS/tot)*Math.PI; // the fixed starting stage sits centered at the top
+  const ang=c.chain.map(s=>{const w=(s[0]==='S'?WS:WA)/tot*2*Math.PI,a0=acc;acc+=w;return [a0,acc]});
+  const slot=Array(c.chain.length).fill(null); slot[0]=0;
+  S={id,c,n:c.chain.length,ang,slot,pv:{0:c.chain[0][2]},pool:shuffle(tiles.slice(1).map(t=>t.id)),tiles,
+     sel:null,marks:null,solved:false,used:{},checks:0,tipOpen:false,hp:6};
+  $('#caption').innerHTML=''; render(); say('');
+}
+function tabs(){
+  $('#bCert').hidden=!allDone();
+  $('#tabs').innerHTML=ORDER.map(k=>`<button type="button" data-k="${k}" class="${S.id===k?'on':''}">${CYC[k].name}<span class="st">${best[k]?'<span class="stars">'+'★'.repeat(best[k])+'</span>':LEVEL[k]+' · '+CYC[k].chain.length+' חלקים'}</span></button>`).join('');
+  document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{location.hash=b.dataset.k});
+  $('#life').innerHTML=LIFE.map(l=>`<button type="button" data-l="${l.k}" class="${S.used[l.k]?'used':''}" ${S.used[l.k]||S.solved?'disabled':''}><span class="ic">${l.ic}</span><span class="nm">${l.nm}</span><span class="ds">${S.used[l.k]?'נוצל':l.ds}</span></button>`).join('');
+  document.querySelectorAll('#life button').forEach(b=>b.onclick=()=>useLife(b.dataset.l));
+  drawHearts();
+}
+function render(){
+  tabs();
+  const svg=$('#ring'); svg.innerHTML='';
+  const pickedSlot=S.sel&&S.sel.from==='slot'?S.sel.i:null;
+  for(let i=0;i<S.n;i++){
+    const [a0,a1]=S.ang[i],m=(a0+a1)/2,th=a1-a0,k=S.c.chain[i][0];
+    const g=document.createElementNS(NS,'g'); g.setAttribute('class','seg '+k); g.dataset.i=i;
+    const t=S.slot[i]!=null?S.tiles[S.slot[i]]:null, pv=t?S.pv[t.id]:null;
+    if(t){g.classList.add('filled'); if(k==='S'&&pv) g.classList.add(pv==='n'?'pn':'p2n')}
+    if(S.marks&&S.marks[i]!=null) g.classList.add(S.marks[i]?'ok':'bad');
+    if(pickedSlot===i) g.classList.add('picked');
+    if(i===0) g.classList.add('fixed');
+    const p=document.createElementNS(NS,'path'); p.setAttribute('d',sector(a0+.004,a1-.004)); p.setAttribute('class','bg'); g.append(p);
+    const deg=m*180/Math.PI, flip=deg>90&&deg<270, mid=(R+r)/2, w=2*mid*Math.sin(th/2)*.9;
+    const inner=document.createElementNS(NS,'g'); inner.setAttribute('class','lift'); inner.setAttribute('transform',`rotate(${deg}) translate(0 ${-mid}) ${flip?'rotate(180)':''}`);
+    if(t){
+      const fs=S.n>=10?(k==='S'?6:5.2):S.n>=8?(k==='S'?6.6:5.8):(k==='S'?7.2:6.4);
+      const col=k==='A'?(kind(t.lbl)==='mei'?'var(--mei)':kind(t.lbl)==='fert'?'var(--fert)':'var(--fg)'):'var(--fg)';
+      const fo=document.createElementNS(NS,'foreignObject'); fo.setAttribute('x',-w/2); fo.setAttribute('y',k==='S'?-21:-17); fo.setAttribute('width',w); fo.setAttribute('height',k==='S'?30:34);
+      fo.innerHTML=`<div xmlns="http://www.w3.org/1999/xhtml" class="lbl" style="font-size:${fs}px;color:${col};font-weight:${k==='S'?700:600}">${esc(t.lbl)}</div>`;
+      inner.append(fo);
+      if(k==='S'){const tx=document.createElementNS(NS,'text'); tx.setAttribute('y',flip?-16:19); tx.setAttribute('text-anchor','middle'); tx.setAttribute('class','pbadge');
+        tx.setAttribute('fill',pv==='n'?'var(--n)':pv==='2n'?'var(--d)':'var(--mut)'); tx.textContent=i===0?pv+' · נקודת התחלה':(pv||'n / 2n ?'); inner.append(tx)}
+    } else {
+      const tx=document.createElementNS(NS,'text'); tx.setAttribute('class','hint'); tx.setAttribute('text-anchor','middle'); tx.setAttribute('y',2); tx.textContent=k==='S'?'שלב':'תהליך'; inner.append(tx);
+    }
+    g.append(inner);
+    if(k==='A'){ // clockwise arrow marks process slots
+      const rr=R-4.5,b0=a0+th*.18,b1=a1-th*.18,[x0,y0]=P(b0,rr),[x1,y1]=P(b1,rr);
+      const ar=document.createElementNS(NS,'path'); ar.setAttribute('d',`M${x0} ${y0} A${rr} ${rr} 0 0 1 ${x1} ${y1}`); ar.setAttribute('fill','none'); ar.setAttribute('stroke','var(--slot)'); ar.setAttribute('stroke-width','.9'); g.append(ar);
+      const dx=Math.cos(b1),dy=Math.sin(b1),nx=-dy,ny=dx; const hd=document.createElementNS(NS,'path');
+      hd.setAttribute('d',`M${x1+dx*2.6} ${y1+dy*2.6} L${x1+nx*1.8} ${y1+ny*1.8} L${x1-nx*1.8} ${y1-ny*1.8} Z`); hd.setAttribute('fill','var(--slot)'); g.append(hd);
+    }
+    g.addEventListener('pointerdown',e=>down(e,{from:'slot',i}));
+    svg.append(g);
+  }
+  const t1=document.createElementNS(NS,'text'); t1.setAttribute('class','center'); t1.setAttribute('text-anchor','middle'); t1.setAttribute('y',S.solved?-2:2); t1.textContent=S.solved?S.c.name:'↻';
+  svg.append(t1);
+  if(S.solved){const t2=document.createElementNS(NS,'text'); t2.setAttribute('class','center2'); t2.setAttribute('text-anchor','middle'); t2.setAttribute('y',8); t2.setAttribute('direction','ltr'); t2.textContent=S.c.en; svg.append(t2)}
+  ['S','A'].forEach(k=>{
+    const ids=S.pool.filter(id=>S.tiles[id].k===k);
+    $('#pool'+k).innerHTML=ids.map(id=>{const t=S.tiles[id];return `<span class="tile ${t.k} ${t.k==='A'?kind(t.lbl):''} ${S.sel&&S.sel.from==='pool'&&S.sel.id===id?'sel':''}" data-t="${id}" role="button" tabindex="0">${esc(t.lbl)}</span>`}).join('')||'<span class="kick">אין</span>';
+  });
+  document.querySelectorAll('#tray .tile').forEach(el=>{el.onpointerdown=e=>down(e,{from:'pool',id:+el.dataset.t});el.onkeydown=e=>{if(e.key==='Enter')tapPool(+el.dataset.t)}});
+  $('#cnt').textContent=S.pool.length?`חלקים במגש: ${S.pool.length}`:'כל החלקים בטבעת';
+  panel();
+}
+function drawHearts(){
+  const h=S.hp,el=$('#hearts'); let out='<span class="hl">לבבות</span>';
+  for(let k=0;k<3;k++){const v=h-k*2; out+=v>=2?'<span class="h">❤️</span>':v===1?'<span class="h">💔</span>':'<span class="h off">🖤</span>'}
+  el.innerHTML=out; el.setAttribute('aria-label',`נשארו ${h/2} לבבות מתוך 3`);
+}
+/* sounds: WebAudio, no files */
+let sndOn=store.get('ring-sound',true), actx=null;
+function tone(seq,type){ if(!sndOn) return; try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume();
+  let t=actx.currentTime+.02; seq.forEach(([f0,f1,d,vol])=>{const o=actx.createOscillator(),g=actx.createGain();o.type=type||'triangle';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol||.22,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+d+.03);t+=d*.92});
+ }catch(_){} }
+const sndFail=()=>tone([[392,370,.22],[349,330,.22],[311,220,.55]],'sawtooth');
+const sndHalf=()=>tone([[440,330,.32,.18]],'triangle');
+const sndOver=()=>tone([[330,311,.28],[294,277,.28],[262,247,.28],[220,110,.9]],'sawtooth');
+const sndWin=()=>tone([[523,523,.12],[659,659,.12],[784,784,.12],[1047,1047,.35]],'triangle');
+function sndBtn(){const b=$('#bSnd');b.textContent='צליל: '+(sndOn?'פועל':'כבוי');b.setAttribute('aria-pressed',String(sndOn))}
+function say(t,c){const m=$('#msg');m.textContent=t;m.className='msg'+(c?' '+c:'')}
+function shake(i){const el=document.querySelector(`#ring .seg[data-i="${i}"]`);if(el){el.classList.remove('shake');void el.getBBox();el.classList.add('shake')}}
+
+/* moving pieces: pool -> slot, slot -> slot (swap), slot -> pool */
+function moveTo(src,i){
+  if(i===0){say('שלב 1 קבוע ולא זז. הניחו את החלק במשבצת אחרת.','bad');shake(i);return false}
+  const k=S.c.chain[i][0], id=src.from==='pool'?src.id:S.slot[src.i], t=S.tiles[id];
+  if(t.k!==k){say(t.k==='S'?'זה שלב (מה קיים). הוא נכנס למשבצת רחבה בלי חץ.':'זה תהליך (מה קורה). הוא נכנס למשבצת צרה עם חץ.','bad');shake(i);return false}
+  if(src.from==='slot'&&src.i===i){S.sel=null;render();return true}
+  const prev=S.slot[i];
+  if(src.from==='pool'){S.pool=S.pool.filter(x=>x!==id); if(prev!=null) S.pool.push(prev)}
+  else { S.slot[src.i]=null; if(prev!=null){ if(S.c.chain[src.i][0]===S.tiles[prev].k) S.slot[src.i]=prev; else S.pool.push(prev)} }
+  S.slot[i]=id; S.sel=null; S.marks=null;
+  say(prev!=null&&src.from==='slot'?'החלקים התחלפו.':'');
+  if(k==='S'&&!S.pv[id]) S.sel={from:'slot',i,ploidyOnly:true};
+  render(); return true;
+}
+function toPool(i){const id=S.slot[i];if(id==null)return;S.slot[i]=null;S.pool.push(id);S.sel=null;S.marks=null;render()}
+function tapPool(id){ if(S.solved)return; S.sel=(S.sel&&S.sel.from==='pool'&&S.sel.id===id)?null:{from:'pool',id}; render(); if(S.sel) say('עכשיו הקישו על משבצת בטבעת, או גררו לשם.') }
+function tapSlot(i){
+  if(S.solved) return;
+  if(S.sel&&!(S.sel.from==='slot'&&S.sel.i===i)&&!S.sel.ploidyOnly){moveTo(S.sel,i);return}
+  if(S.slot[i]==null){ if(S.sel&&S.sel.ploidyOnly){S.sel=null;render()} return }
+  S.sel=(S.sel&&S.sel.from==='slot'&&S.sel.i===i)?null:{from:'slot',i}; render();
+  if(S.sel) say('החלק הורם. הקישו על משבצת אחרת כדי להעביר אותו או להחליף, או על המגש כדי להחזיר.');
+}
+$('#tray').addEventListener('click',e=>{ if(S.sel&&S.sel.from==='slot'&&!e.target.closest('.tile')) toPool(S.sel.i) });
+
+/* long press: info bubble about a stage or process (definitions only, no order or ploidy given away) */
+const INFO={
+ 'פרט בוגר':'הצורה הבוגרת של האורגניזם, זו שרואים בטבע. ממנה מתחילים את הטבעת.',
+ 'גמטות':'תאי מין. שתי גמטות מתאחדות בהפריה. גמטה זכרית יכולה להיות תא זרע ששוחה בעזרת שוטונים.',
+ 'זיגוטה':'התא הראשון של הדור החדש, שנוצר מאיחוד של שתי גמטות.',
+ '4 תאים / נבגים':'תוצרי חלוקת ההפחתה: ארבעה תאים, שכל אחד מהם יכול להתחלק ולגדול לפרט חדש.',
+ 'ספורופיט':'"צמח הנבגים": הפרט הרב-תאי שיוצר נבגים (ספורות).',
+ 'מיוספורות':'נבגים שנוצרו במיוזה. כל נבג מתפתח לבדו, בלי להתאחד עם תא אחר.',
+ 'גמטופיט':'"צמח הגמטות": הפרט הרב-תאי שיוצר גמטות.',
+ 'הפריה':'איחוד של שתי גמטות לתא אחד. מספר הכרומוזומים מוכפל.',
+ 'מיטוזות (גדילה)':'חלוקות תא רגילות וחוזרות, שהופכות תא בודד לפרט רב-תאי. מספר הכרומוזומים לא משתנה.',
+ 'נביטה ומיטוזות':'הנבג מתחיל להתחלק בחלוקות רגילות וגדל לפרט רב-תאי.',
+ 'מיטוזה (יצירת גמטות)':'הגמטות נוצרות בחלוקה רגילה, בלי הפחתה: מספר הכרומוזומים נשאר כמו בפרט שיצר אותן.',
+ 'מיטוזה בגמטנגיום':'יצירת גמטות בחלוקה רגילה בתוך הגמטנגיום, המבנה שמייצר גמטות.',
+ 'מיוזה ביצירת גמטות':'חלוקת הפחתה שהתוצרים שלה הם ישירות הגמטות.',
+ 'מיוזה בזיגוטה':'חלוקת הפחתה שהזיגוטה עצמה עוברת: מספר הכרומוזומים יורד לחצי.',
+ 'מיוזה במיוספורנגיום':'חלוקת הפחתה בתוך המיוספורנגיום, המבנה שמייצר נבגים. מספר הכרומוזומים יורד לחצי.'};
+let lp=null; const infoEl=document.createElement('div'); infoEl.className='info'; infoEl.hidden=true; infoEl.setAttribute('role','tooltip'); document.body.appendChild(infoEl);
+function hideInfo(){infoEl.hidden=true}
+function showInfo(id,x,y){
+  const t=S.tiles[id]; if(!t) return;
+  infoEl.innerHTML=`<div class="ih"><span class="q" aria-hidden="true">?</span><b>${esc(t.lbl)}</b><span class="k">${t.k==='S'?'שלב · מה קיים':'תהליך · מה קורה'}</span></div><div>${esc(INFO[t.lbl]||'')}</div>`;
+  infoEl.hidden=false; const w=infoEl.offsetWidth,h=infoEl.offsetHeight;
+  const L=Math.max(16,Math.min(innerWidth-16-w,x-w/2)); let T=y-h-22, below=false; if(T<8){T=y+26;below=true}
+  infoEl.classList.toggle('below',below); infoEl.style.left=L+'px'; infoEl.style.top=T+'px'; infoEl.style.setProperty('--ax',Math.max(14,Math.min(w-14,x-L))+'px');
+  if(navigator.vibrate) try{navigator.vibrate(15)}catch(_){}
+}
+function startLP(e,id){
+  hideInfo(); if(id==null) return; const x0=e.clientX,y0=e.clientY;
+  lp={fired:false,timer:setTimeout(()=>{lp.fired=true;if(drag.on&&!drag.moved){drag.on=false;window.removeEventListener('pointermove',move)}showInfo(id,x0,y0)},480)};
+  const stop=ev=>{if(ev.type==='pointermove'&&Math.hypot(ev.clientX-x0,ev.clientY-y0)<8)return;clearTimeout(lp.timer);window.removeEventListener('pointermove',stop);window.removeEventListener('pointerup',stop);window.removeEventListener('pointercancel',stop)};
+  window.addEventListener('pointermove',stop); window.addEventListener('pointerup',stop); window.addEventListener('pointercancel',stop);
+}
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.tile,.seg'))hideInfo()},true);
+addEventListener('scroll',hideInfo,{passive:true});
+['#tray','#ring'].forEach(q=>$(q).addEventListener('contextmenu',e=>e.preventDefault()));
+
+/* drag with pointer; a short press without movement counts as a tap */
+const drag={on:false,moved:false};
+function down(e,src){
+  if(e.button>0) return;
+  startLP(e,src.from==='pool'?src.id:S.slot[src.i]);
+  if(S.solved) return;
+  if(src.from==='slot'&&src.i===0){ say('שלב 1 קבוע: ממנו מתחילים ומסדרים עם כיוון השעון.'); return }
+  if(src.from==='slot'&&S.slot[src.i]==null){ e.preventDefault(); tapSlot(src.i); return }
+  Object.assign(drag,{on:true,moved:false,src,x0:e.clientX,y0:e.clientY,ghost:null,over:null,el:e.currentTarget});
+  try{e.currentTarget.setPointerCapture(e.pointerId)}catch(_){}
+  window.addEventListener('pointermove',move); window.addEventListener('pointerup',up,{once:true}); window.addEventListener('pointercancel',cancel,{once:true});
+}
+function move(e){
+  if(!drag.on) return;
+  if(!drag.moved&&Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)<8) return;
+  if(!drag.moved){drag.moved=true;const id=drag.src.from==='pool'?drag.src.id:S.slot[drag.src.i],t=S.tiles[id];
+    const g=document.createElement('span');g.className=`tile ${t.k} ${t.k==='A'?kind(t.lbl):''} ghost`;g.textContent=t.lbl;document.body.appendChild(g);drag.ghost=g;}
+  drag.ghost.style.left=(e.clientX-drag.ghost.offsetWidth/2)+'px';drag.ghost.style.top=(e.clientY-drag.ghost.offsetHeight-14)+'px';
+  const tgt=target(e); if(drag.over&&drag.over!==tgt) drag.over.classList.remove('target'); if(tgt) tgt.classList.add('target'); drag.over=tgt;
+}
+function target(e){const u=document.elementFromPoint(e.clientX,e.clientY);return u&&(u.closest('#ring .seg')||u.closest('#tray'))}
+function up(e){
+  window.removeEventListener('pointermove',move);
+  if(!drag.on) return; drag.on=false;
+  if(lp&&lp.fired){ if(drag.ghost) drag.ghost.remove(); return }
+  if(drag.ghost) drag.ghost.remove(); if(drag.over) drag.over.classList.remove('target');
+  if(!drag.moved){ drag.src.from==='pool'?tapPool(drag.src.id):tapSlot(drag.src.i); return }
+  const tgt=target(e);
+  if(tgt&&tgt.classList.contains('seg')) moveTo(drag.src,+tgt.dataset.i);
+  else if(tgt&&tgt.id==='tray'&&drag.src.from==='slot') toPool(drag.src.i);
+  else render();
+}
+function cancel(){window.removeEventListener('pointermove',move);if(drag.ghost)drag.ghost.remove();if(drag.over)drag.over.classList.remove('target');drag.on=false;render()}
+
+/* scoring against the best rotation (stages stay on stage slots, so rotate by whole stage+process pairs) */
+function bestFit(){
+  let b=null;
+  for(let sh=0;sh<1;sh+=2){ // the first stage is fixed, so only one alignment
+    const m=[];let sc=0;
+    for(let i=0;i<S.n;i++){const want=S.c.chain[(i+sh)%S.n],id=S.slot[i];
+      const okT=id!=null&&S.tiles[id].lbl===want[1], okP=want[0]==='A'||S.pv[id]===want[2];
+      m.push(id==null?null:(okT&&okP)); if(okT&&okP) sc++;
+      // ties: prefer the rotation that matches more labels
+    }
+    const lab=S.slot.reduce((a,id,i)=>a+(id!=null&&S.tiles[id].lbl===S.c.chain[(i+sh)%S.n][1]?1:0),0);
+    if(!b||sc>b.sc||(sc===b.sc&&lab>b.lab)) b={sc,lab,m,sh};
+  }
+  return b;
+}
+function panel(){
+  const p=$('#panel'), tb=$('#tipbox');
+  if(S.tipOpen&&!S.solved){tb.hidden=false;tb.innerHTML=`<b>רמז מהמרצה:</b> ${esc(S.c.tip)}<div class="row"><button type="button" id="tipx">הבנתי</button></div>`;$('#tipx').onclick=()=>{S.tipOpen=false;render()}} else tb.hidden=true;
+  if(S.solved&&S.hold){p.hidden=true;return}
+  if(S.solved){p.hidden=false;p.className='panel done';const nx=ORDER[(ORDER.indexOf(S.id)+1)%3],st=S.stars;
+    p.innerHTML=`<b>הטבעת שלמה: מחזור ${esc(S.c.name)}.</b> <span class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</span><p style="margin:4px 0 0">${esc(S.c.why)}</p><p class="kick" style="margin:4px 0 0">${esc(S.c.ex)} · ${Object.keys(S.used).length?`גלגלי הצלה: ${Object.keys(S.used).length}`:'בלי גלגלי הצלה'} · בדיקות: ${S.checks} · לבבות שנשארו: ${S.hp/2}</p><div class="row"><button type="button" id="again">שוב</button><button type="button" class="btn-main" id="nx">הבא: ${CYC[nx].name}</button>${allDone()?'<button type="button" class="btn-gold" id="pc">התעודה שלי</button>':''}</div>`;
+    $('#again').onclick=()=>start(S.id); $('#nx').onclick=()=>{location.hash=nx}; if(allDone())$('#pc').onclick=showCert; return}
+  if(!S.sel||S.sel.from!=='slot'||S.slot[S.sel.i]==null){p.hidden=true;return}
+  const i=S.sel.i,id=S.slot[i],t=S.tiles[id],k=S.c.chain[i][0]; p.hidden=false; p.className='panel';
+  p.innerHTML=`<b>${esc(t.lbl)}</b> <span class="kick">(${k==='S'?'שלב':'תהליך'})</span>${k==='S'?`<div class="row pl"><span class="kick">פלואידיה:</span><button type="button" data-p="n" class="${S.pv[id]==='n'?'on':''}">n</button><button type="button" data-p="2n" class="${S.pv[id]==='2n'?'on':''}">2n</button></div>`:''}
+   <div class="row"><span class="kick">כדי להזיז: הקישו על משבצת אחרת.</span><button type="button" id="ret">החזרה למגש</button></div>`;
+  p.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.pv[id]=b.dataset.p;S.marks=null;S.sel=null;render()});
+  $('#ret').onclick=()=>toPool(i);
+}
+function useLife(k){
+  if(S.used[k]||S.solved) return;
+  if(k==='tip'){S.used.tip=1;S.tipOpen=true;S.sel=null;render();return}
+  if(k==='scan'){
+    const placed=S.slot.filter(x=>x!=null).length; if(!placed){say('הניחו קודם כמה חלקים, ואז הבדיקה השקטה תספר כמה מהם נכונים.','bad');return}
+    S.used.scan=1; const b=bestFit(); const ok=b.m.filter(x=>x===true).length;
+    const left=S.pool.length, nopl=S.slot.filter((id,i)=>id!=null&&S.c.chain[i]&&S.tiles[id].k==='S'&&!S.pv[id]).length;
+    const extra=[left?`${left===1?'חלק אחד עדיין לא נגרר לטבעת':left+' חלקים עדיין לא נגררו לטבעת'}`:'', nopl?`${nopl===1?'לשלב אחד':'ל-'+nopl+' שלבים'} עדיין לא נבחר n או 2n (הקישו על השלב בטבעת)`:''].filter(Boolean);
+    render(); say(`בדיקה שקטה: ${ok} מתוך ${placed} החלקים שהנחתם נכונים (כולל פלואידיה), בלי לגלות אילו.${extra.length?' שימו לב: '+extra.join(', ו')+'.':' כל החלקים בטבעת ולכל השלבים נבחרה פלואידיה.'}`,ok===placed&&!extra.length?'ok':'');
+    return;
+  }
+  if(k==='place'){
+    const b=bestFit(); let i=-1;
+    for(let j=0;j<S.n;j++){if(b.m[j]!==true){i=j;break}}
+    if(i<0) return;
+    const want=S.c.chain[(i+b.sh)%S.n]; let id=S.pool.find(x=>S.tiles[x].lbl===want[1]&&S.tiles[x].k===want[0]);
+    let src; if(id!=null) src={from:'pool',id}; else { const j=S.slot.findIndex((x,jj)=>x!=null&&jj!==i&&S.tiles[x].lbl===want[1]); if(j<0)return; src={from:'slot',i:j}; id=S.slot[j] }
+    S.used.place=1; S.sel=null; moveTo(src,i); if(want[0]==='S'){S.pv[id]=want[2];S.sel=null}
+    S.marks=null; render(); const el=document.querySelector(`#ring .seg[data-i="${i}"]`); if(el) el.classList.add('ok');
+    say('חלק אחד הונח במקומו, כולל הפלואידיה. הוא מסומן בירוק.','ok');
+  }
+}
+$('#bCheck').onclick=()=>{
+  if(S.hold||S.solved) return;
+  S.checks++; const b=bestFit(); S.marks=b.m; S.sel=null;
+  if(b.sc===S.n){const first=!allDone();S.solved=true;S.marks=null;S.stars=Math.max(1,3-Object.keys(S.used).length);best[S.id]=Math.max(best[S.id]||0,S.stars);store.set('ring-stars',best);S.hold=true;render();sndWin();say('נכון! הטבעת סגורה.','ok');
+    celebrate(()=>{S.hold=false;render();if(first&&allDone())setTimeout(showCert,900)});return}
+  const empty=S.slot.filter(x=>x==null).length, nopl=S.slot.filter((x,i)=>x!=null&&S.c.chain[i][0]==='S'&&!S.pv[x]).length, wrong=b.m.filter(x=>x===false).length;
+  // mistakes: a piece in the wrong slot costs a heart; right order but wrong n/2n costs half. Empty slots or unchosen n/2n are not mistakes.
+  let badPos=0,badPl=0; S.slot.forEach((id,i)=>{if(id==null)return;const want=S.c.chain[i];if(S.tiles[id].lbl!==want[1])badPos++;else if(want[0]==='S'&&S.pv[id]&&S.pv[id]!==want[2])badPl++});
+  const loss=badPos?2:badPl?1:0; S.hp=Math.max(0,S.hp-loss);
+  render();
+  const base=`${wrong} חלקים מסומנים באדום${empty?`, ${empty} משבצות ריקות`:''}${nopl?`. ל-${nopl} שלבים חסרה פלואידיה`:''}. אדום = לא במקום או פלואידיה שגויה.`;
+  if(loss){const hh=$('#hearts');hh.classList.remove('hit');void hh.offsetWidth;hh.classList.add('hit');if(navigator.vibrate)try{navigator.vibrate(loss>1?[60,40,60]:40)}catch(_){}}
+  if(S.hp<=0){ sndOver(); S.hold=true; say('💔 נגמרו הלבבות. הפאזל מתחיל מההתחלה...','bad');
+    const gid=S.id; setTimeout(()=>{if(S.id!==gid||S.hp>0)return;start(gid);say('הפאזל התחיל מחדש עם 3 לבבות. הפעם בודקים בזהירות.','')},2200); return }
+  if(loss===2){ sndFail(); say(`ירד לב: יש חלק במקום הלא נכון. ${base}`,'bad'); return }
+  if(loss===1){ sndHalf(); say(`💔 ירד חצי לב: הסידור נכון, הטעות היא ב-n/2n. ${base}`,'bad'); return }
+  say(`אין טעויות בינתיים, ולא ירד לב. ${base}`,'');
+};
+$('#bReset').onclick=()=>start(S.id);
+$('#bSnd').onclick=()=>{sndOn=!sndOn;store.set('ring-sound',sndOn);sndBtn();if(sndOn)tone([[660,660,.08,.12]])};sndBtn();
+
+/* ---------- celebration: a swimming sperm cell travels the full cycle, then confetti ---------- */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function celebrate(onEnd){
+  const n=S.n, cap=$('#caption'); let i=0; S.anim=true;
+  $('#ring').scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
+  const svg=$('#ring'); const dot=document.createElementNS(NS,'g'); dot.setAttribute('class','sperm');
+  dot.innerHTML='<title>תא זרע עם שוטון</title><path fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/><ellipse rx="7" ry="4.4" fill="var(--gold)" stroke="var(--fg)" stroke-width=".6"/>';
+  const tail=dot.querySelector('path'); svg.append(dot); let px=null,py=null,rot=0;
+  const mid=(R+r)/2, total=reduce?1:n*700; let t0=null;
+  const ends=S.ang.map(a=>a[1]), a0=S.ang[0][0];
+  function frame(ts){
+    if(t0==null)t0=ts; const f=Math.min(1,(ts-t0)/total), a=a0+f*2*Math.PI, [x,y]=P(a,mid);
+    if(px!=null&&(x!==px||y!==py)) rot=Math.atan2(y-py,x-px)*180/Math.PI; px=x;py=y;
+    const ph=ts/70; let d='M-6 0'; for(let k=1;k<=12;k++){const tx=-6-k*2.2;d+=` L${tx.toFixed(2)} ${(Math.sin(ph-k*.8)*k*.4).toFixed(2)}`}
+    tail.setAttribute('d',d); dot.setAttribute('transform',`translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${rot.toFixed(1)})`);
+    while(i<n&&a>=S.ang[i][0]){ const g=svg.querySelector(`.seg[data-i="${i}"]`); if(g)g.classList.add('glow');
+      const st=S.c.chain[i]; cap.innerHTML=st[0]==='S'?`${esc(st[1])} <span style="color:var(--${st[2]==='n'?'n':'d'})">(${st[2]})</span>`:`<span class="ar">↓ ${esc(st[1])}</span>`; i++ }
+    if(f<1) requestAnimationFrame(frame);
+    else { dot.remove(); cap.innerHTML=`↺ ובחזרה ל${esc(S.c.chain[0][1])}. המחזור סגור!`; confetti(); S.anim=false; onEnd&&onEnd() }
+  }
+  requestAnimationFrame(frame);
+}
+function confetti(){
+  if(reduce) return;
+  const cv=$('#fx'); cv.hidden=false; const dpr=devicePixelRatio||1; cv.width=innerWidth*dpr; cv.height=innerHeight*dpr; const x=cv.getContext('2d'); x.scale(dpr,dpr);
+  const cs=getComputedStyle(document.documentElement), cols=['--n','--d','--mei','--fert','--gold'].map(v=>cs.getPropertyValue(v).trim());
+  const ps=Array.from({length:140},()=>({x:innerWidth/2,y:innerHeight*.45,vx:(Math.random()-.5)*12,vy:-Math.random()*13-3,s:4+Math.random()*6,c:cols[Math.floor(Math.random()*cols.length)],r:Math.random()*6,t:Math.random()<.5}));
+  let k=0; (function tick(){ x.clearRect(0,0,innerWidth,innerHeight); ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.r+=.15;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;
+      if(p.t){x.beginPath();x.arc(0,0,p.s/2,0,7);x.fill()} else x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); x.restore()});
+    if(++k<110) requestAnimationFrame(tick); else {x.clearRect(0,0,innerWidth,innerHeight);cv.hidden=true} })();
+}
+
+/* ---------- QR for the classroom ---------- */
+const QRD='M1 1h1v1h-1zM2 1h1v1h-1zM3 1h1v1h-1zM4 1h1v1h-1zM5 1h1v1h-1zM6 1h1v1h-1zM7 1h1v1h-1zM10 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM13 1h1v1h-1zM14 1h1v1h-1zM15 1h1v1h-1zM18 1h1v1h-1zM19 1h1v1h-1zM23 1h1v1h-1zM27 1h1v1h-1zM28 1h1v1h-1zM29 1h1v1h-1zM30 1h1v1h-1zM31 1h1v1h-1zM32 1h1v1h-1zM33 1h1v1h-1zM1 2h1v1h-1zM7 2h1v1h-1zM9 2h1v1h-1zM12 2h1v1h-1zM19 2h1v1h-1zM22 2h1v1h-1zM23 2h1v1h-1zM25 2h1v1h-1zM27 2h1v1h-1zM33 2h1v1h-1zM1 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM5 3h1v1h-1zM7 3h1v1h-1zM9 3h1v1h-1zM10 3h1v1h-1zM12 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM17 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM23 3h1v1h-1zM25 3h1v1h-1zM27 3h1v1h-1zM29 3h1v1h-1zM30 3h1v1h-1zM31 3h1v1h-1zM33 3h1v1h-1zM1 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM7 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM15 4h1v1h-1zM16 4h1v1h-1zM17 4h1v1h-1zM19 4h1v1h-1zM21 4h1v1h-1zM23 4h1v1h-1zM25 4h1v1h-1zM27 4h1v1h-1zM29 4h1v1h-1zM30 4h1v1h-1zM31 4h1v1h-1zM33 4h1v1h-1zM1 5h1v1h-1zM3 5h1v1h-1zM4 5h1v1h-1zM5 5h1v1h-1zM7 5h1v1h-1zM11 5h1v1h-1zM13 5h1v1h-1zM14 5h1v1h-1zM15 5h1v1h-1zM16 5h1v1h-1zM17 5h1v1h-1zM18 5h1v1h-1zM21 5h1v1h-1zM24 5h1v1h-1zM25 5h1v1h-1zM27 5h1v1h-1zM29 5h1v1h-1zM30 5h1v1h-1zM31 5h1v1h-1zM33 5h1v1h-1zM1 6h1v1h-1zM7 6h1v1h-1zM10 6h1v1h-1zM11 6h1v1h-1zM16 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM27 6h1v1h-1zM33 6h1v1h-1zM1 7h1v1h-1zM2 7h1v1h-1zM3 7h1v1h-1zM4 7h1v1h-1zM5 7h1v1h-1zM6 7h1v1h-1zM7 7h1v1h-1zM9 7h1v1h-1zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h1v1h-1zM19 7h1v1h-1zM21 7h1v1h-1zM23 7h1v1h-1zM25 7h1v1h-1zM27 7h1v1h-1zM28 7h1v1h-1zM29 7h1v1h-1zM30 7h1v1h-1zM31 7h1v1h-1zM32 7h1v1h-1zM33 7h1v1h-1zM9 8h1v1h-1zM10 8h1v1h-1zM11 8h1v1h-1zM12 8h1v1h-1zM15 8h1v1h-1zM16 8h1v1h-1zM17 8h1v1h-1zM19 8h1v1h-1zM20 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM25 8h1v1h-1zM1 9h1v1h-1zM7 9h1v1h-1zM9 9h1v1h-1zM12 9h1v1h-1zM13 9h1v1h-1zM14 9h1v1h-1zM15 9h1v1h-1zM18 9h1v1h-1zM20 9h1v1h-1zM21 9h1v1h-1zM23 9h1v1h-1zM26 9h1v1h-1zM27 9h1v1h-1zM30 9h1v1h-1zM31 9h1v1h-1zM32 9h1v1h-1zM1 10h1v1h-1zM3 10h1v1h-1zM5 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM9 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM23 10h1v1h-1zM24 10h1v1h-1zM29 10h1v1h-1zM30 10h1v1h-1zM31 10h1v1h-1zM3 11h1v1h-1zM4 11h1v1h-1zM7 11h1v1h-1zM8 11h1v1h-1zM10 11h1v1h-1zM11 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM16 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM21 11h1v1h-1zM23 11h1v1h-1zM25 11h1v1h-1zM26 11h1v1h-1zM27 11h1v1h-1zM29 11h1v1h-1zM31 11h1v1h-1zM32 11h1v1h-1zM2 12h1v1h-1zM6 12h1v1h-1zM8 12h1v1h-1zM9 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM14 12h1v1h-1zM16 12h1v1h-1zM17 12h1v1h-1zM18 12h1v1h-1zM19 12h1v1h-1zM22 12h1v1h-1zM24 12h1v1h-1zM25 12h1v1h-1zM26 12h1v1h-1zM28 12h1v1h-1zM29 12h1v1h-1zM30 12h1v1h-1zM31 12h1v1h-1zM32 12h1v1h-1zM1 13h1v1h-1zM4 13h1v1h-1zM6 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM11 13h1v1h-1zM13 13h1v1h-1zM14 13h1v1h-1zM18 13h1v1h-1zM22 13h1v1h-1zM24 13h1v1h-1zM27 13h1v1h-1zM28 13h1v1h-1zM1 14h1v1h-1zM5 14h1v1h-1zM6 14h1v1h-1zM8 14h1v1h-1zM9 14h1v1h-1zM10 14h1v1h-1zM14 14h1v1h-1zM19 14h1v1h-1zM22 14h1v1h-1zM24 14h1v1h-1zM26 14h1v1h-1zM27 14h1v1h-1zM31 14h1v1h-1zM32 14h1v1h-1zM33 14h1v1h-1zM1 15h1v1h-1zM4 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM11 15h1v1h-1zM13 15h1v1h-1zM15 15h1v1h-1zM16 15h1v1h-1zM17 15h1v1h-1zM21 15h1v1h-1zM23 15h1v1h-1zM26 15h1v1h-1zM27 15h1v1h-1zM30 15h1v1h-1zM32 15h1v1h-1zM1 16h1v1h-1zM3 16h1v1h-1zM4 16h1v1h-1zM8 16h1v1h-1zM12 16h1v1h-1zM17 16h1v1h-1zM21 16h1v1h-1zM23 16h1v1h-1zM24 16h1v1h-1zM26 16h1v1h-1zM28 16h1v1h-1zM29 16h1v1h-1zM30 16h1v1h-1zM31 16h1v1h-1zM33 16h1v1h-1zM2 17h1v1h-1zM6 17h1v1h-1zM7 17h1v1h-1zM8 17h1v1h-1zM13 17h1v1h-1zM14 17h1v1h-1zM16 17h1v1h-1zM18 17h1v1h-1zM23 17h1v1h-1zM26 17h1v1h-1zM28 17h1v1h-1zM29 17h1v1h-1zM30 17h1v1h-1zM33 17h1v1h-1zM2 18h1v1h-1zM5 18h1v1h-1zM8 18h1v1h-1zM9 18h1v1h-1zM10 18h1v1h-1zM11 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM16 18h1v1h-1zM19 18h1v1h-1zM20 18h1v1h-1zM21 18h1v1h-1zM24 18h1v1h-1zM27 18h1v1h-1zM30 18h1v1h-1zM31 18h1v1h-1zM33 18h1v1h-1zM1 19h1v1h-1zM2 19h1v1h-1zM4 19h1v1h-1zM5 19h1v1h-1zM6 19h1v1h-1zM7 19h1v1h-1zM9 19h1v1h-1zM10 19h1v1h-1zM13 19h1v1h-1zM14 19h1v1h-1zM15 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM19 19h1v1h-1zM20 19h1v1h-1zM22 19h1v1h-1zM23 19h1v1h-1zM24 19h1v1h-1zM26 19h1v1h-1zM27 19h1v1h-1zM28 19h1v1h-1zM30 19h1v1h-1zM31 19h1v1h-1zM32 19h1v1h-1zM33 19h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM11 20h1v1h-1zM16 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1zM21 20h1v1h-1zM23 20h1v1h-1zM27 20h1v1h-1zM29 20h1v1h-1zM30 20h1v1h-1zM31 20h1v1h-1zM32 20h1v1h-1zM4 21h1v1h-1zM5 21h1v1h-1zM7 21h1v1h-1zM9 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM15 21h1v1h-1zM19 21h1v1h-1zM22 21h1v1h-1zM25 21h1v1h-1zM26 21h1v1h-1zM28 21h1v1h-1zM29 21h1v1h-1zM30 21h1v1h-1zM32 21h1v1h-1zM1 22h1v1h-1zM2 22h1v1h-1zM4 22h1v1h-1zM9 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM24 22h1v1h-1zM28 22h1v1h-1zM29 22h1v1h-1zM1 23h1v1h-1zM3 23h1v1h-1zM7 23h1v1h-1zM8 23h1v1h-1zM9 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM14 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM22 23h1v1h-1zM23 23h1v1h-1zM25 23h1v1h-1zM26 23h1v1h-1zM27 23h1v1h-1zM28 23h1v1h-1zM30 23h1v1h-1zM31 23h1v1h-1zM32 23h1v1h-1zM1 24h1v1h-1zM6 24h1v1h-1zM13 24h1v1h-1zM14 24h1v1h-1zM15 24h1v1h-1zM16 24h1v1h-1zM17 24h1v1h-1zM19 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1zM26 24h1v1h-1zM27 24h1v1h-1zM28 24h1v1h-1zM29 24h1v1h-1zM30 24h1v1h-1zM31 24h1v1h-1zM32 24h1v1h-1zM1 25h1v1h-1zM2 25h1v1h-1zM3 25h1v1h-1zM4 25h1v1h-1zM5 25h1v1h-1zM7 25h1v1h-1zM8 25h1v1h-1zM10 25h1v1h-1zM11 25h1v1h-1zM13 25h1v1h-1zM17 25h1v1h-1zM19 25h1v1h-1zM21 25h1v1h-1zM25 25h1v1h-1zM26 25h1v1h-1zM27 25h1v1h-1zM28 25h1v1h-1zM29 25h1v1h-1zM30 25h1v1h-1zM9 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM15 26h1v1h-1zM16 26h1v1h-1zM17 26h1v1h-1zM18 26h1v1h-1zM19 26h1v1h-1zM20 26h1v1h-1zM21 26h1v1h-1zM22 26h1v1h-1zM23 26h1v1h-1zM25 26h1v1h-1zM29 26h1v1h-1zM31 26h1v1h-1zM33 26h1v1h-1zM1 27h1v1h-1zM2 27h1v1h-1zM3 27h1v1h-1zM4 27h1v1h-1zM5 27h1v1h-1zM6 27h1v1h-1zM7 27h1v1h-1zM11 27h1v1h-1zM12 27h1v1h-1zM13 27h1v1h-1zM14 27h1v1h-1zM15 27h1v1h-1zM16 27h1v1h-1zM17 27h1v1h-1zM18 27h1v1h-1zM23 27h1v1h-1zM24 27h1v1h-1zM25 27h1v1h-1zM27 27h1v1h-1zM29 27h1v1h-1zM31 27h1v1h-1zM32 27h1v1h-1zM1 28h1v1h-1zM7 28h1v1h-1zM11 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM18 28h1v1h-1zM19 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM23 28h1v1h-1zM24 28h1v1h-1zM25 28h1v1h-1zM29 28h1v1h-1zM30 28h1v1h-1zM31 28h1v1h-1zM1 29h1v1h-1zM3 29h1v1h-1zM4 29h1v1h-1zM5 29h1v1h-1zM7 29h1v1h-1zM11 29h1v1h-1zM12 29h1v1h-1zM13 29h1v1h-1zM17 29h1v1h-1zM20 29h1v1h-1zM21 29h1v1h-1zM22 29h1v1h-1zM23 29h1v1h-1zM25 29h1v1h-1zM26 29h1v1h-1zM27 29h1v1h-1zM28 29h1v1h-1zM29 29h1v1h-1zM30 29h1v1h-1zM32 29h1v1h-1zM1 30h1v1h-1zM3 30h1v1h-1zM4 30h1v1h-1zM5 30h1v1h-1zM7 30h1v1h-1zM10 30h1v1h-1zM15 30h1v1h-1zM18 30h1v1h-1zM19 30h1v1h-1zM24 30h1v1h-1zM25 30h1v1h-1zM26 30h1v1h-1zM28 30h1v1h-1zM29 30h1v1h-1zM31 30h1v1h-1zM33 30h1v1h-1zM1 31h1v1h-1zM3 31h1v1h-1zM4 31h1v1h-1zM5 31h1v1h-1zM7 31h1v1h-1zM13 31h1v1h-1zM14 31h1v1h-1zM15 31h1v1h-1zM16 31h1v1h-1zM20 31h1v1h-1zM23 31h1v1h-1zM26 31h1v1h-1zM28 31h1v1h-1zM29 31h1v1h-1zM32 31h1v1h-1zM33 31h1v1h-1zM1 32h1v1h-1zM7 32h1v1h-1zM10 32h1v1h-1zM12 32h1v1h-1zM13 32h1v1h-1zM14 32h1v1h-1zM19 32h1v1h-1zM23 32h1v1h-1zM27 32h1v1h-1zM28 32h1v1h-1zM29 32h1v1h-1zM30 32h1v1h-1zM31 32h1v1h-1zM1 33h1v1h-1zM2 33h1v1h-1zM3 33h1v1h-1zM4 33h1v1h-1zM5 33h1v1h-1zM6 33h1v1h-1zM7 33h1v1h-1zM9 33h1v1h-1zM10 33h1v1h-1zM14 33h1v1h-1zM15 33h1v1h-1zM16 33h1v1h-1zM18 33h1v1h-1zM24 33h1v1h-1zM25 33h1v1h-1zM26 33h1v1h-1zM28 33h1v1h-1zM32 33h1v1h-1z', QRN=35, URL0='https://omerpines.github.io/life-cycle-rings/';
+$('#bQR').onclick=()=>{const o=$('#ov');o.hidden=false;
+  o.innerHTML=`<div class="box"><h2>טבעות מחזורי חיים</h2><p>סורקים, ובונים את שלושת המחזורים בטלפון</p><svg class="qrbig" viewBox="0 0 ${QRN} ${QRN}" shape-rendering="crispEdges" role="img" aria-label="קוד QR למשחק"><rect width="${QRN}" height="${QRN}" fill="#fff"/><path d="${QRD}" fill="#000"/></svg><div class="url">${URL0}</div><button type="button" id="ovx">סגירה</button></div>`;
+  $('#ovx').onclick=()=>{o.hidden=true}};
+
+/* ---------- certificate: Certified Algae Whisperer ---------- */
+const allDone=()=>ORDER.every(k=>best[k]);
+function certImage(name){
+  const W=1600,H=1130,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  x.fillStyle='#fbf7ec';x.fillRect(0,0,W,H);
+  x.strokeStyle='#0c7a6c';x.lineWidth=14;x.strokeRect(40,40,W-80,H-80);x.strokeStyle='#b8860b';x.lineWidth=4;x.strokeRect(70,70,W-140,H-140);
+  // corner rings: little life cycles
+  [[150,150],[W-150,150]].forEach(([cx,cy])=>{x.lineWidth=12;x.strokeStyle='#a8660a';x.beginPath();x.arc(cx,cy,48,-Math.PI/2,Math.PI*.5);x.stroke();x.strokeStyle='#0c7a6c';x.beginPath();x.arc(cx,cy,48,Math.PI*.5,Math.PI*1.5);x.stroke()});
+  x.direction='rtl';x.textAlign='center';x.fillStyle='#15241f';
+  const F=(sz,w)=>`${w||400} ${sz}px "Secular One","Assistant",sans-serif`, B=(sz,w)=>`${w||400} ${sz}px "Assistant",sans-serif`;
+  x.font=B(34);x.fillStyle='#56685f';x.fillText('הפקולטה לחקלאות · 71049 מבוא למדעי הצמח · מחלקת הטבעות המסתובבות',W/2,175);
+  x.font=F(92);x.fillStyle='#15241f';x.fillText('תעודת הסמכה רשמית (למחצה)',W/2,300);
+  x.font=B(40);x.fillText('בזאת מוענק התואר',W/2,385);
+  x.font=F(118);x.fillStyle='#0c7a6c';x.fillText('לוחש/ת לאצות',W/2,515);
+  x.font=B(40);x.fillStyle='#15241f';x.fillText('ל',W/2,585);
+  x.font=F(84);x.fillStyle='#a8660a';x.fillText(name||'סטודנט/ית אנונימי/ת עם זיגוטה',W/2,680);
+  x.fillRect(W/2-380,700,760,3);
+  x.font=B(36);x.fillStyle='#15241f';
+  ['על שסגר/ה טבעת הפלונטית, הפלו-דיפלונטית ודיפלונטית בלי לבלבל בין נבג לגמטה,',
+   'על ששכנע/ה זיגוטה לעבור מיוזה בדיוק בזמן, ועל שלא קרא/ה לספורופיט "הגמטופיט הגדול".',
+   'מעתה מוסמך/ת לשמוע כלמידומונס מחליפה זן ולהרגיע למינריה בהתקף זהות.'].forEach((l,i)=>x.fillText(l,W/2,790+i*56));
+  const st=ORDER.reduce((a,k)=>a+(best[k]||0),0);
+  x.font=B(40,700);x.fillStyle='#b8860b';x.fillText('★'.repeat(st)+'☆'.repeat(9-st)+`   ${st}/9`,W/2,985);
+  x.font=B(28);x.fillStyle='#56685f';x.textAlign='right';x.fillText('תאריך: '+new Date().toLocaleDateString('he-IL'),W-340,1045);
+  x.textAlign='left';x.fillText('חתום: הוועדה העליונה לענייני n ו-2n',140,1045);
+  // seal
+  x.save();x.translate(W-210,990);x.rotate(-.2);x.strokeStyle='#b2306a';x.lineWidth=6;x.beginPath();x.arc(0,0,78,0,7);x.stroke();x.beginPath();x.arc(0,0,63,0,7);x.stroke();
+  x.fillStyle='#b2306a';x.textAlign='center';x.font=F(30);x.fillText('מאושר',0,-6);x.font=B(20,700);x.fillText('מיוזה ✓ מיטוזה ✓',0,26);x.restore();
+  return c.toDataURL('image/png');
+}
+function showCert(){
+  const o=$('#ov');o.hidden=false;let name=store.get('ring-name','');
+  o.innerHTML=`<div class="box cert"><h2>לוחש/ת לאצות!</h2><p>שלוש הטבעות סגורות. כתבו שם, והתעודה מוכנה.</p>
+   <p><label for="cname" class="kick">שם על התעודה</label><br><input id="cname" maxlength="40" value="${esc(name)}" placeholder="השם שלך"></p>
+   <img id="cimg" alt="תעודת לוחש/ת לאצות">
+   <p class="kick" style="margin-top:8px">לשמירה: לחיצה ארוכה על התעודה (בטלפון) או צילום מסך. בגרסה שהורדה למחשב עובד גם כפתור ההורדה.</p>
+   <div class="row" style="justify-content:center;display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="cdl">הורדת התעודה</button><button type="button" class="btn-main" id="cx">סגירה</button></div></div>`;
+  const draw=()=>{$('#cimg').src=certImage($('#cname').value.trim())};
+  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+  $('#cname').oninput=()=>{store.set('ring-name',$('#cname').value);draw()};
+  $('#cdl').onclick=async()=>{const fn='תעודת לוחש לאצות.png',src=$('#cimg').src;let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}if(dl){try{const bin=atob(src.split(',')[1]),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);const b=new Blob([u],{type:'image/png'});await dl.save({filename:fn,data:b})}catch(e){}return}const a=document.createElement('a');a.href=src;a.download=fn;document.body.appendChild(a);a.click();a.remove()};
+  $('#cx').onclick=()=>{o.hidden=true};
+}
+$('#bCert').onclick=showCert;
+
+function route(){start(location.hash.slice(1)||'dip')}
+window.addEventListener('hashchange',route); route();
+})();
+</script>
+</body></html>
