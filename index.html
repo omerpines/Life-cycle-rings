@@ -38,13 +38,17 @@ button:disabled{opacity:.45;cursor:default}
 .tabs button{padding:8px 4px;font-size:14px;line-height:1.2}
 .tabs button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .tabs .st{display:block;font-size:12px;opacity:.8}
+.lifebox{margin:16px 0 0;padding:12px;border:2px solid var(--gold);border-radius:14px;background:var(--panel)}
+.lifebox h2{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-family:var(--display);font-weight:400;font-size:20px}
+.lifebox .buoy{width:28px;height:28px;color:#d9462b;flex:none}
+.lifebox .kick{margin:0 0 10px}
 .life{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 8px}
 .life button{display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 4px;font-size:13px;line-height:1.2;border-color:var(--gold)}
 .life button .ic{font-size:18px;line-height:1.1;color:var(--gold)}
 .life button .nm{font-weight:700}
 .life button .ds{font-size:11.5px;color:var(--mut)}
 .life button.used{border-style:dashed;border-color:var(--line)}
-.hearts{display:flex;align-items:center;justify-content:center;gap:4px;margin:0 0 6px;font-size:24px;line-height:1}
+.hearts{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 6px;font-size:24px;line-height:1}
 .hearts .hl{font-size:13px;color:var(--mut);margin-inline-end:6px}
 .hearts .h.off{filter:grayscale(1);opacity:.35}
 .hearts.hit{animation:shake .45s}
@@ -72,6 +76,8 @@ svg.ring{display:block;width:100%;height:auto}
 .hint{fill:var(--mut);font-size:5.5px;font-family:var(--body)}
 .center{font-family:var(--display);font-size:9px;fill:var(--fg)}
 .center2{font-size:5.5px;fill:var(--mut);font-family:var(--body)}
+.center3{font-size:6px;fill:var(--mut);font-family:var(--body)}
+.center4{font-size:6.4px;fill:var(--fg);font-family:var(--body);font-weight:600}
 .pbadge{font-size:6px;font-weight:700;font-family:var(--body);direction:ltr}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0 0}
 .panel .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
@@ -116,10 +122,18 @@ svg.ring{display:block;width:100%;height:auto}
 @media (prefers-reduced-motion:reduce){.shake{animation:none}.tray{transition:none}}
 
 .seg.glow path.bg{stroke:var(--gold)!important;stroke-width:2.6!important;stroke-dasharray:none!important}
+.caption:empty{min-height:0;margin:0}
 .caption{min-height:52px;text-align:center;font-family:var(--display);font-size:20px;line-height:1.25;margin:8px 0 0}
 .caption .ar{color:var(--mut);font-family:var(--body);font-size:15px;display:block}
 canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
 .topbtns{display:flex;gap:6px;justify-content:flex-start;margin:0 0 8px}
+.btn-help{display:inline-flex;align-items:center;gap:6px;border-color:var(--gold)!important;font-weight:700}
+.btn-help .qi{width:20px;height:20px;border-radius:50%;background:var(--gold);color:#1a1405;display:grid;place-items:center;font-size:13px}
+.overlay .box.help{text-align:right;max-height:86vh;overflow:auto}
+.help h3{margin:14px 0 4px;font-size:16px}
+.help p,.help li{font-size:14.5px;line-height:1.5;margin:0 0 6px}
+.help ul{padding-inline-start:18px;margin:0}
+.help .defs{margin:6px 0}
 .topbtns button{font-size:14px;padding:6px 12px}
 .overlay{position:fixed;inset:0;z-index:70;background:color-mix(in srgb,var(--bg) 92%,transparent);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));overflow-y:auto}
 .overlay .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:720px;width:100%;text-align:center}
@@ -136,14 +150,8 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 <div class="wrap">
   <div class="kick">71049 מבוא למדעי הצמח · מחזורי חיים</div>
   <h1>טבעות מחזורי חיים</h1>
-  <div class="defs">
-    <div class="def S"><b>שלב = מה קיים</b>תא, גמטה, נבג או אורגניזם שלם. לכל שלב יש פלואידיה, n או 2n. משבצת רחבה בלי חץ.</div>
-    <div class="def A"><b>תהליך = מה קורה</b>מה שהופך שלב אחד לשלב הבא: מיוזה, מיטוזה, הפריה, נביטה. לתהליך אין פלואידיה. משבצת צרה עם חץ.</div>
-  </div>
-  <p class="kick">שלב 1 קבוע בראש הטבעת. ממנו מסדרים עם כיוון השעון: תהליך, שלב, תהליך, שלב, עד שחוזרים אליו. גוררים חלק, או מקישים עליו ואז על משבצת. אפשר להזיז חלק שכבר הונח, ושני חלקים מתחלפים ביניהם. הקשה על שלב בטבעת פותחת את בחירת ה-n או 2n. <b>לחיצה ארוכה על חלק</b> פותחת בועית <b>?</b> עם הסבר עליו. <b>לכל פאזל 3 לבבות:</b> בדיקה עם חלק במקום הלא נכון מורידה לב שלם. כשהסידור נכון וטועים רק ב-n/2n, יורד חצי לב. אחרי 3 לבבות הפאזל מתחיל מחדש.</p>
-  <div class="topbtns"><button type="button" id="bQR">QR להצגה בכיתה</button><button type="button" id="bCert" hidden>התעודה שלי</button><button type="button" id="bSnd" aria-pressed="true">צליל: פועל</button></div>
+  <div class="topbtns"><button type="button" id="bHelp" class="btn-help"><span class="qi" aria-hidden="true">?</span>איך משחקים?</button><button type="button" id="bQR">QR להצגה בכיתה</button><button type="button" id="bCert" hidden>התעודה שלי</button><button type="button" id="bSnd" aria-pressed="true">צליל: פועל</button></div>
   <nav class="tabs" id="tabs"></nav>
-  <div class="life" id="life"></div>
   <div class="hearts" id="hearts" aria-live="polite"></div>
   <div class="ringbox"><svg class="ring" id="ring" viewBox="-102 -102 204 204" role="img" aria-label="טבעת מחזור החיים"></svg></div>
   <div class="caption" id="caption" aria-live="polite"></div>
@@ -155,8 +163,8 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
     <div class="grp"><div class="gl">תהליכים (מה קורה)</div><div class="pool" id="poolA"></div></div>
   </div>
   <div class="msg" id="msg" aria-live="polite"></div>
-  <div class="legend"><span><span class="sw" style="background:var(--n)"></span>n</span><span><span class="sw" style="background:var(--d)"></span>2n</span><span><span class="sw" style="background:var(--mei)"></span>מיוזה</span><span><span class="sw" style="background:var(--fert)"></span>הפריה</span></div>
-  <p class="foot">התוכן: סיכום שבוע 2 בכספת (מצגת משימת מחזורי החיים במודל) והחוברת הצהובה עמ' 112. שלב 1 קבוע בראש הטבעת, ומשם מסדרים עם כיוון השעון.<br>הוכן על ידי עומר פינס ותומר גזית.</p>
+  <section class="lifebox" aria-labelledby="lifeh"><h2 id="lifeh"><svg class="buoy" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="7.46 7.46" stroke-dashoffset="3.7"/><circle cx="12" cy="12" r="9.5" fill="none" stroke="var(--line)" stroke-width="5" stroke-dasharray="7.46 7.46" stroke-dashoffset="11.16"/><circle cx="12" cy="12" r="12" fill="none" stroke="var(--fg)" stroke-width=".8"/><circle cx="12" cy="12" r="7" fill="none" stroke="var(--fg)" stroke-width=".8"/></svg>גלגלי הצלה</h2><div class="life" id="life"></div></section>
+  <p class="foot">הוכן על ידי עומר פינס ותומר גזית.</p>
 </div>
 
 <script>
@@ -166,15 +174,15 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const CYC={
- hap:{name:'הפלונטי',en:'haplontic',ex:'דוגמאות מהקורס: Chlamydomonas, Spirogyra',
+ hap:{name:'הפלונטי',en:'haplontic',def:['רק השלב ההפלואידי','(n) רב-תאי'],ex:'דוגמאות מהקורס: Chlamydomonas, Spirogyra',
   chain:[['S','פרט בוגר','n'],['A','מיטוזה (יצירת גמטות)'],['S','גמטות','n'],['A','הפריה'],['S','זיגוטה','2n'],['A','מיוזה בזיגוטה'],['S','4 תאים / נבגים','n'],['A','מיטוזות (גדילה)']],
   tip:'רק השלב ההפלואידי גדל. הזיגוטה היא התא הדיפלואידי היחיד, והיא עוברת מיוזה מיד. לכן הגמטות נוצרות במיטוזה: הפרט כבר n.',
   why:'רק השלב ההפלואידי גדל. הזיגוטה היא התא הדיפלואידי היחיד, והיא עוברת מיוזה מיד.'},
- hd:{name:'הפלו-דיפלונטי',en:'haplo-diplontic',ex:'דוגמאות מהקורס: Ulva, Laminaria',
+ hd:{name:'הפלו-דיפלונטי',en:'haplo-diplontic',def:['שני דורות רב-תאיים','מתחלפים: n וגם 2n'],ex:'דוגמאות מהקורס: Ulva, Laminaria',
   chain:[['S','ספורופיט','2n'],['A','מיוזה במיוספורנגיום'],['S','מיוספורות','n'],['A','נביטה ומיטוזות'],['S','גמטופיט','n'],['A','מיטוזה בגמטנגיום'],['S','גמטות','n'],['A','הפריה'],['S','זיגוטה','2n'],['A','מיטוזות (גדילה)']],
   tip:'יש כאן שני פרטים רב-תאיים. הספורופיט (2n) יוצר נבגים במיוזה, והנבג נובט לבדו לגמטופיט, בלי להתלכד. הגמטופיט (n) יוצר גמטות במיטוזה.',
   why:'חילוף דורות: הגמטופיט (n) יוצר גמטות במיטוזה, והספורופיט (2n) יוצר מיוספורות במיוזה. הזיגוטה מתחלקת במיטוזות, לא במיוזה.'},
- dip:{name:'דיפלונטי',en:'diplontic',ex:'דוגמאות מהקורס: צורניות, Fucus',
+ dip:{name:'דיפלונטי',en:'diplontic',def:['רק השלב הדיפלואידי','(2n) רב-תאי'],ex:'דוגמאות מהקורס: צורניות, Fucus',
   chain:[['S','פרט בוגר','2n'],['A','מיוזה ביצירת גמטות'],['S','גמטות','n'],['A','הפריה'],['S','זיגוטה','2n'],['A','מיטוזות (גדילה)']],
   tip:'רק השלב הדיפלואידי גדל ("מאפיין בעלי חיים"). תוצרי המיוזה הם הגמטות עצמן, והן השלב ההפלואידי היחיד.',
   why:'רק השלב הדיפלואידי גדל. המיוזה יוצרת גמטות ישירות, והן השלב ההפלואידי היחיד.'}
@@ -232,7 +240,7 @@ function render(){
       fo.innerHTML=`<div xmlns="http://www.w3.org/1999/xhtml" class="lbl" style="font-size:${fs}px;color:${col};font-weight:${k==='S'?700:600}">${esc(t.lbl)}</div>`;
       inner.append(fo);
       if(k==='S'){const tx=document.createElementNS(NS,'text'); tx.setAttribute('y',flip?-16:19); tx.setAttribute('text-anchor','middle'); tx.setAttribute('class','pbadge');
-        tx.setAttribute('fill',pv==='n'?'var(--n)':pv==='2n'?'var(--d)':'var(--mut)'); tx.textContent=i===0?pv+' · נקודת התחלה':(pv||'n / 2n ?'); inner.append(tx)}
+        tx.setAttribute('fill',pv==='n'?'var(--n)':pv==='2n'?'var(--d)':'var(--mut)'); tx.textContent=i===0?pv+' · התחלה':(pv||'n / 2n ?'); inner.append(tx)}
     } else {
       const tx=document.createElementNS(NS,'text'); tx.setAttribute('class','hint'); tx.setAttribute('text-anchor','middle'); tx.setAttribute('y',2); tx.textContent=k==='S'?'שלב':'תהליך'; inner.append(tx);
     }
@@ -246,9 +254,12 @@ function render(){
     g.addEventListener('pointerdown',e=>down(e,{from:'slot',i}));
     svg.append(g);
   }
-  const t1=document.createElementNS(NS,'text'); t1.setAttribute('class','center'); t1.setAttribute('text-anchor','middle'); t1.setAttribute('y',S.solved?-2:2); t1.textContent=S.solved?S.c.name:'↻';
-  svg.append(t1);
-  if(S.solved){const t2=document.createElementNS(NS,'text'); t2.setAttribute('class','center2'); t2.setAttribute('text-anchor','middle'); t2.setAttribute('y',8); t2.setAttribute('direction','ltr'); t2.textContent=S.c.en; svg.append(t2)}
+  const ctext=(cls,y,txt,ltr)=>{const t=document.createElementNS(NS,'text');t.setAttribute('class',cls);t.setAttribute('text-anchor','middle');t.setAttribute('y',y);if(ltr)t.setAttribute('direction','ltr');t.textContent=txt;svg.append(t)};
+  ctext('center3',-21,'מחזור');
+  ctext('center',-9,S.c.name);
+  ctext('center2',-1,S.c.en,true);
+  S.c.def.forEach((l,k)=>ctext('center4',11+k*8,l));
+  ctext('center2',33,S.solved?'✓ המחזור סגור':'↻ עם כיוון השעון');
   ['S','A'].forEach(k=>{
     const ids=S.pool.filter(id=>S.tiles[id].k===k);
     $('#pool'+k).innerHTML=ids.map(id=>{const t=S.tiles[id];return `<span class="tile ${t.k} ${t.k==='A'?kind(t.lbl):''} ${S.sel&&S.sel.from==='pool'&&S.sel.id===id?'sel':''}" data-t="${id}" role="button" tabindex="0">${esc(t.lbl)}</span>`}).join('')||'<span class="kick">אין</span>';
@@ -258,7 +269,7 @@ function render(){
   panel();
 }
 function drawHearts(){
-  const h=S.hp,el=$('#hearts'); let out='<span class="hl">לבבות</span>';
+  const h=S.hp,el=$('#hearts'); let out='';
   for(let k=0;k<3;k++){const v=h-k*2; out+=v>=2?'<span class="h">❤️</span>':v===1?'<span class="h">💔</span>':'<span class="h off">🖤</span>'}
   el.innerHTML=out; el.setAttribute('aria-label',`נשארו ${h/2} לבבות מתוך 3`);
 }
@@ -478,6 +489,30 @@ function confetti(){
 
 /* ---------- QR for the classroom ---------- */
 const QRD='M1 1h1v1h-1zM2 1h1v1h-1zM3 1h1v1h-1zM4 1h1v1h-1zM5 1h1v1h-1zM6 1h1v1h-1zM7 1h1v1h-1zM10 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM17 1h1v1h-1zM19 1h1v1h-1zM20 1h1v1h-1zM21 1h1v1h-1zM24 1h1v1h-1zM27 1h1v1h-1zM28 1h1v1h-1zM29 1h1v1h-1zM30 1h1v1h-1zM31 1h1v1h-1zM32 1h1v1h-1zM33 1h1v1h-1zM1 2h1v1h-1zM7 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM13 2h1v1h-1zM16 2h1v1h-1zM19 2h1v1h-1zM23 2h1v1h-1zM25 2h1v1h-1zM27 2h1v1h-1zM33 2h1v1h-1zM1 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM5 3h1v1h-1zM7 3h1v1h-1zM9 3h1v1h-1zM10 3h1v1h-1zM12 3h1v1h-1zM13 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM17 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM23 3h1v1h-1zM25 3h1v1h-1zM27 3h1v1h-1zM29 3h1v1h-1zM30 3h1v1h-1zM31 3h1v1h-1zM33 3h1v1h-1zM1 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM7 4h1v1h-1zM9 4h1v1h-1zM12 4h1v1h-1zM13 4h1v1h-1zM19 4h1v1h-1zM22 4h1v1h-1zM25 4h1v1h-1zM27 4h1v1h-1zM29 4h1v1h-1zM30 4h1v1h-1zM31 4h1v1h-1zM33 4h1v1h-1zM1 5h1v1h-1zM3 5h1v1h-1zM4 5h1v1h-1zM5 5h1v1h-1zM7 5h1v1h-1zM9 5h1v1h-1zM11 5h1v1h-1zM13 5h1v1h-1zM14 5h1v1h-1zM15 5h1v1h-1zM16 5h1v1h-1zM17 5h1v1h-1zM18 5h1v1h-1zM21 5h1v1h-1zM24 5h1v1h-1zM25 5h1v1h-1zM27 5h1v1h-1zM29 5h1v1h-1zM30 5h1v1h-1zM31 5h1v1h-1zM33 5h1v1h-1zM1 6h1v1h-1zM7 6h1v1h-1zM9 6h1v1h-1zM10 6h1v1h-1zM11 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM27 6h1v1h-1zM33 6h1v1h-1zM1 7h1v1h-1zM2 7h1v1h-1zM3 7h1v1h-1zM4 7h1v1h-1zM5 7h1v1h-1zM6 7h1v1h-1zM7 7h1v1h-1zM9 7h1v1h-1zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h1v1h-1zM19 7h1v1h-1zM21 7h1v1h-1zM23 7h1v1h-1zM25 7h1v1h-1zM27 7h1v1h-1zM28 7h1v1h-1zM29 7h1v1h-1zM30 7h1v1h-1zM31 7h1v1h-1zM32 7h1v1h-1zM33 7h1v1h-1zM9 8h1v1h-1zM10 8h1v1h-1zM12 8h1v1h-1zM15 8h1v1h-1zM17 8h1v1h-1zM19 8h1v1h-1zM20 8h1v1h-1zM21 8h1v1h-1zM22 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM25 8h1v1h-1zM1 9h1v1h-1zM3 9h1v1h-1zM4 9h1v1h-1zM5 9h1v1h-1zM6 9h1v1h-1zM7 9h1v1h-1zM12 9h1v1h-1zM13 9h1v1h-1zM14 9h1v1h-1zM15 9h1v1h-1zM18 9h1v1h-1zM20 9h1v1h-1zM21 9h1v1h-1zM23 9h1v1h-1zM27 9h1v1h-1zM28 9h1v1h-1zM29 9h1v1h-1zM30 9h1v1h-1zM31 9h1v1h-1zM1 10h1v1h-1zM4 10h1v1h-1zM8 10h1v1h-1zM9 10h1v1h-1zM10 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM17 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM21 10h1v1h-1zM24 10h1v1h-1zM27 10h1v1h-1zM28 10h1v1h-1zM30 10h1v1h-1zM31 10h1v1h-1zM33 10h1v1h-1zM7 11h1v1h-1zM8 11h1v1h-1zM10 11h1v1h-1zM11 11h1v1h-1zM13 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM16 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM21 11h1v1h-1zM23 11h1v1h-1zM25 11h1v1h-1zM26 11h1v1h-1zM27 11h1v1h-1zM29 11h1v1h-1zM31 11h1v1h-1zM32 11h1v1h-1zM2 12h1v1h-1zM3 12h1v1h-1zM4 12h1v1h-1zM6 12h1v1h-1zM8 12h1v1h-1zM11 12h1v1h-1zM13 12h1v1h-1zM14 12h1v1h-1zM17 12h1v1h-1zM18 12h1v1h-1zM19 12h1v1h-1zM24 12h1v1h-1zM25 12h1v1h-1zM26 12h1v1h-1zM29 12h1v1h-1zM30 12h1v1h-1zM31 12h1v1h-1zM32 12h1v1h-1zM1 13h1v1h-1zM2 13h1v1h-1zM4 13h1v1h-1zM5 13h1v1h-1zM7 13h1v1h-1zM9 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM13 13h1v1h-1zM15 13h1v1h-1zM17 13h1v1h-1zM20 13h1v1h-1zM21 13h1v1h-1zM22 13h1v1h-1zM23 13h1v1h-1zM26 13h1v1h-1zM28 13h1v1h-1zM29 13h1v1h-1zM30 13h1v1h-1zM32 13h1v1h-1zM33 13h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM8 14h1v1h-1zM9 14h1v1h-1zM14 14h1v1h-1zM16 14h1v1h-1zM19 14h1v1h-1zM24 14h1v1h-1zM26 14h1v1h-1zM27 14h1v1h-1zM28 14h1v1h-1zM31 14h1v1h-1zM32 14h1v1h-1zM33 14h1v1h-1zM2 15h1v1h-1zM4 15h1v1h-1zM7 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM11 15h1v1h-1zM13 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM16 15h1v1h-1zM17 15h1v1h-1zM21 15h1v1h-1zM23 15h1v1h-1zM26 15h1v1h-1zM27 15h1v1h-1zM30 15h1v1h-1zM32 15h1v1h-1zM1 16h1v1h-1zM5 16h1v1h-1zM8 16h1v1h-1zM9 16h1v1h-1zM10 16h1v1h-1zM12 16h1v1h-1zM14 16h1v1h-1zM16 16h1v1h-1zM22 16h1v1h-1zM24 16h1v1h-1zM26 16h1v1h-1zM27 16h1v1h-1zM30 16h1v1h-1zM31 16h1v1h-1zM4 17h1v1h-1zM6 17h1v1h-1zM7 17h1v1h-1zM8 17h1v1h-1zM10 17h1v1h-1zM13 17h1v1h-1zM14 17h1v1h-1zM15 17h1v1h-1zM16 17h1v1h-1zM18 17h1v1h-1zM23 17h1v1h-1zM26 17h1v1h-1zM28 17h1v1h-1zM29 17h1v1h-1zM30 17h1v1h-1zM33 17h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM5 18h1v1h-1zM6 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM19 18h1v1h-1zM20 18h1v1h-1zM21 18h1v1h-1zM22 18h1v1h-1zM24 18h1v1h-1zM27 18h1v1h-1zM28 18h1v1h-1zM30 18h1v1h-1zM31 18h1v1h-1zM33 18h1v1h-1zM1 19h1v1h-1zM3 19h1v1h-1zM4 19h1v1h-1zM7 19h1v1h-1zM10 19h1v1h-1zM11 19h1v1h-1zM12 19h1v1h-1zM13 19h1v1h-1zM16 19h1v1h-1zM17 19h1v1h-1zM19 19h1v1h-1zM21 19h1v1h-1zM22 19h1v1h-1zM28 19h1v1h-1zM29 19h1v1h-1zM31 19h1v1h-1zM3 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM11 20h1v1h-1zM12 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1zM21 20h1v1h-1zM22 20h1v1h-1zM23 20h1v1h-1zM27 20h1v1h-1zM28 20h1v1h-1zM29 20h1v1h-1zM30 20h1v1h-1zM31 20h1v1h-1zM32 20h1v1h-1zM3 21h1v1h-1zM4 21h1v1h-1zM5 21h1v1h-1zM7 21h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM15 21h1v1h-1zM19 21h1v1h-1zM22 21h1v1h-1zM25 21h1v1h-1zM26 21h1v1h-1zM28 21h1v1h-1zM29 21h1v1h-1zM30 21h1v1h-1zM32 21h1v1h-1zM1 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM5 22h1v1h-1zM10 22h1v1h-1zM11 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM14 22h1v1h-1zM15 22h1v1h-1zM16 22h1v1h-1zM17 22h1v1h-1zM21 22h1v1h-1zM22 22h1v1h-1zM23 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM33 22h1v1h-1zM1 23h1v1h-1zM3 23h1v1h-1zM5 23h1v1h-1zM6 23h1v1h-1zM7 23h1v1h-1zM8 23h1v1h-1zM9 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM18 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM22 23h1v1h-1zM23 23h1v1h-1zM25 23h1v1h-1zM26 23h1v1h-1zM27 23h1v1h-1zM28 23h1v1h-1zM30 23h1v1h-1zM31 23h1v1h-1zM32 23h1v1h-1zM1 24h1v1h-1zM4 24h1v1h-1zM6 24h1v1h-1zM10 24h1v1h-1zM11 24h1v1h-1zM13 24h1v1h-1zM17 24h1v1h-1zM19 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1zM26 24h1v1h-1zM27 24h1v1h-1zM29 24h1v1h-1zM30 24h1v1h-1zM31 24h1v1h-1zM32 24h1v1h-1zM1 25h1v1h-1zM4 25h1v1h-1zM6 25h1v1h-1zM7 25h1v1h-1zM9 25h1v1h-1zM10 25h1v1h-1zM11 25h1v1h-1zM12 25h1v1h-1zM15 25h1v1h-1zM18 25h1v1h-1zM19 25h1v1h-1zM20 25h1v1h-1zM23 25h1v1h-1zM24 25h1v1h-1zM25 25h1v1h-1zM26 25h1v1h-1zM27 25h1v1h-1zM28 25h1v1h-1zM29 25h1v1h-1zM32 25h1v1h-1zM33 25h1v1h-1zM9 26h1v1h-1zM10 26h1v1h-1zM11 26h1v1h-1zM12 26h1v1h-1zM14 26h1v1h-1zM15 26h1v1h-1zM17 26h1v1h-1zM18 26h1v1h-1zM19 26h1v1h-1zM20 26h1v1h-1zM21 26h1v1h-1zM23 26h1v1h-1zM25 26h1v1h-1zM29 26h1v1h-1zM31 26h1v1h-1zM33 26h1v1h-1zM1 27h1v1h-1zM2 27h1v1h-1zM3 27h1v1h-1zM4 27h1v1h-1zM5 27h1v1h-1zM6 27h1v1h-1zM7 27h1v1h-1zM11 27h1v1h-1zM12 27h1v1h-1zM13 27h1v1h-1zM14 27h1v1h-1zM15 27h1v1h-1zM16 27h1v1h-1zM17 27h1v1h-1zM18 27h1v1h-1zM23 27h1v1h-1zM24 27h1v1h-1zM25 27h1v1h-1zM27 27h1v1h-1zM29 27h1v1h-1zM31 27h1v1h-1zM32 27h1v1h-1zM1 28h1v1h-1zM7 28h1v1h-1zM9 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM16 28h1v1h-1zM18 28h1v1h-1zM19 28h1v1h-1zM20 28h1v1h-1zM21 28h1v1h-1zM24 28h1v1h-1zM25 28h1v1h-1zM29 28h1v1h-1zM30 28h1v1h-1zM31 28h1v1h-1zM33 28h1v1h-1zM1 29h1v1h-1zM3 29h1v1h-1zM4 29h1v1h-1zM5 29h1v1h-1zM7 29h1v1h-1zM9 29h1v1h-1zM11 29h1v1h-1zM13 29h1v1h-1zM17 29h1v1h-1zM20 29h1v1h-1zM21 29h1v1h-1zM22 29h1v1h-1zM23 29h1v1h-1zM25 29h1v1h-1zM26 29h1v1h-1zM27 29h1v1h-1zM28 29h1v1h-1zM29 29h1v1h-1zM30 29h1v1h-1zM32 29h1v1h-1zM1 30h1v1h-1zM3 30h1v1h-1zM4 30h1v1h-1zM5 30h1v1h-1zM7 30h1v1h-1zM9 30h1v1h-1zM10 30h1v1h-1zM15 30h1v1h-1zM16 30h1v1h-1zM18 30h1v1h-1zM19 30h1v1h-1zM22 30h1v1h-1zM24 30h1v1h-1zM25 30h1v1h-1zM26 30h1v1h-1zM29 30h1v1h-1zM31 30h1v1h-1zM33 30h1v1h-1zM1 31h1v1h-1zM3 31h1v1h-1zM4 31h1v1h-1zM5 31h1v1h-1zM7 31h1v1h-1zM9 31h1v1h-1zM11 31h1v1h-1zM12 31h1v1h-1zM13 31h1v1h-1zM15 31h1v1h-1zM16 31h1v1h-1zM17 31h1v1h-1zM18 31h1v1h-1zM21 31h1v1h-1zM24 31h1v1h-1zM27 31h1v1h-1zM28 31h1v1h-1zM30 31h1v1h-1zM1 32h1v1h-1zM7 32h1v1h-1zM10 32h1v1h-1zM12 32h1v1h-1zM13 32h1v1h-1zM14 32h1v1h-1zM16 32h1v1h-1zM19 32h1v1h-1zM22 32h1v1h-1zM23 32h1v1h-1zM27 32h1v1h-1zM29 32h1v1h-1zM30 32h1v1h-1zM31 32h1v1h-1zM1 33h1v1h-1zM2 33h1v1h-1zM3 33h1v1h-1zM4 33h1v1h-1zM5 33h1v1h-1zM6 33h1v1h-1zM7 33h1v1h-1zM9 33h1v1h-1zM10 33h1v1h-1zM16 33h1v1h-1zM18 33h1v1h-1zM24 33h1v1h-1zM25 33h1v1h-1zM26 33h1v1h-1zM28 33h1v1h-1zM32 33h1v1h-1z', QRN=35, URL0='https://omerpines.github.io/Life-cycle-rings/';
+const HELP=`<div class="box help"><h2>איך משחקים?</h2>
+<div class="defs">
+    <div class="def S"><b>שלב = מה קיים</b>תא, גמטה, נבג או אורגניזם שלם. לכל שלב יש פלואידיה, n או 2n. משבצת רחבה בלי חץ.</div>
+    <div class="def A"><b>תהליך = מה קורה</b>מה שהופך שלב אחד לשלב הבא: מיוזה, מיטוזה, הפריה, נביטה. לתהליך אין פלואידיה. משבצת צרה עם חץ.</div>
+  </div>
+<h3>בונים את הטבעת</h3><ul>
+<li>השלב בראש הטבעת קבוע. ממנו מסדרים עם כיוון השעון: תהליך, שלב, תהליך, שלב, עד שחוזרים אליו.</li>
+<li>גוררים חלק מהמגש למשבצת, או מקישים על החלק ואז על המשבצת. משבצת רחבה היא לשלב, וצרה עם חץ היא לתהליך.</li>
+<li>אפשר להזיז חלק שכבר הונח. חלק שמונח על משבצת תפוסה מתחלף איתה.</li>
+<li>הקשה על שלב בטבעת פותחת בחירה של n או 2n.</li>
+<li>לחיצה ארוכה על כל חלק פותחת בועית <b>?</b> עם הסבר עליו.</li></ul>
+<h3>לבבות</h3><ul>
+<li>לכל פאזל 3 לבבות. בדיקה עם חלק במקום הלא נכון מורידה לב שלם.</li>
+<li>כשהסידור נכון והטעות רק ב-n/2n, יורד חצי לב 💔.</li>
+<li>אחרי 3 לבבות הפאזל מתחיל מההתחלה.</li></ul>
+<h3>גלגלי הצלה</h3><ul>
+<li><b>רמז מהמרצה:</b> משפט מכוון על המחזור.</li>
+<li><b>בדיקה שקטה:</b> כמה חלקים כבר נכונים, בלי לגלות אילו, ומה עוד חסר.</li>
+<li><b>חלק במקום:</b> מניח חלק אחד נכון, כולל n/2n.</li>
+<li>כל גלגל אפשר להפעיל פעם אחת בכל פאזל, וכל שימוש מוריד כוכב מהציון.</li></ul>
+<h3>בסוף</h3><p>אחרי שלושת המחזורים מקבלים תעודת לוחש/ת לאצות.</p>
+<p class="kick">התוכן: סיכום שבוע 2 בכספת (מצגת משימת מחזורי החיים במודל) והחוברת הצהובה עמ' 112.</p>
+<div style="text-align:center;margin-top:10px"><button type="button" class="btn-main" id="ovx">הבנתי, למשחק</button></div></div>`;
+$('#bHelp').onclick=()=>{const o=$('#ov');o.hidden=false;o.innerHTML=HELP;$('#ovx').onclick=()=>{o.hidden=true}};
 $('#bQR').onclick=()=>{const o=$('#ov');o.hidden=false;
   o.innerHTML=`<div class="box"><h2>טבעות מחזורי חיים</h2><p>סורקים, ובונים את שלושת המחזורים בטלפון</p><svg class="qrbig" viewBox="0 0 ${QRN} ${QRN}" shape-rendering="crispEdges" role="img" aria-label="קוד QR למשחק"><rect width="${QRN}" height="${QRN}" fill="#fff"/><path d="${QRD}" fill="#000"/></svg><div class="url">${URL0}</div><button type="button" id="ovx">סגירה</button></div>`;
   $('#ovx').onclick=()=>{o.hidden=true}};
